@@ -1,0 +1,37 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+
+model User {
+  id Int @id @default(autoincrement())
+  account String @unique
+  name String?
+  todos Todo[]
+  //아이디 입장에서 1:다라서 todo를 다가질수있다는 것을 인식 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Todo {
+  id Int @id @default(autoincrement())
+  todo String
+  isDone Boolean
+  user User @relation(fields: [userId], references: [id])
+  userId Int 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+ @@index([userId])
+ //검색효율 증가시키는 역할도 한다고함 
+
+}
