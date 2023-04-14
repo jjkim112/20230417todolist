@@ -9,7 +9,7 @@ const client = new PrismaClient();
 router.post("/", async (req, res) => {
   try {
     const { account } = req.body;
-    const existUser = await client.use.findUnique({
+    const existUser = await client.user.findUnique({
       where: {
         account,
       },
