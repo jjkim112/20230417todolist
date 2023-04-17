@@ -7,6 +7,7 @@ import CreateTodo from "./components/CreateTodo";
 function App() {
   const [user, setUser] = useState();
   const [todos, setTodos] = useState();
+  const [skip, setSkip] = useState(0);
 
   const getTodos = async () => {
     try {
@@ -15,10 +16,11 @@ function App() {
       }
 
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/todo/${user.id}`
+        `${process.env.REACT_APP_BACKEND_URL}/todo/${user.id}?skip=${skip}`
       );
 
       setTodos(response.data.todos);
+      setSkip(skip + 3);
     } catch (error) {
       console.error(error);
       alert("투두리스트를 불러오지 못했습니다.");
@@ -27,6 +29,21 @@ function App() {
 
   const onClickLogOut = () => {
     setUser(undefined);
+  };
+
+  const onClickReload = async () => {
+    try {
+      if (!user) return;
+
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/todo/${user.id}?skip=${skip}`
+      );
+
+      setTodos([...todos, ...response.data.todos]);
+      setSkip(skip + 3);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
@@ -68,10 +85,28 @@ function App() {
         {/* 이렇게하면 기존 데이터도 모두 다시 다끌고와서/getTodo/ 데이터 낭비라고하심 그래서 다른방법인 아래방법으로 사용 그것은 스프레드방법 기존껀 펼치고 새로운것만 추가한다 push같은 기능*/}
         <CreateTodo userId={user.id} setTodos={setTodos} todos={todos} />
       </div>
+      <div className="mt-16">
+        <button
+          className="ml-4 px-4 py-2 bg-pink-200 hover:bg-pink-400 rounded-lg text-gray-50 text-xl"
+          onClick={onClickReload}
+        >
+          갱신
+        </button>
+      </div>
       <div className="mt-16 flex flex-col w-1/2">
         {todos &&
           todos.map((v, i) => {
-            return <TodoCard key={i} todo={v.todo} isDone={v.isDone} />;
+            return (
+              <TodoCard
+                key={i}
+                todo={v.todo}
+                isDone={v.isDone}
+                id={v.id}
+                userId={user.id}
+                todos={todos}
+                setTodos={setTodos}
+              />
+            );
           })}
       </div>
     </div>
