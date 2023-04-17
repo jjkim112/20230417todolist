@@ -31,7 +31,7 @@ router.post("/", async (req, res) => {
     const newTodo = await client.todo.create({
       data: {
         todo: todo,
-        inDone: false,
+        isDone: false,
         userId: user.id,
       },
     });
@@ -45,7 +45,7 @@ router.post("/", async (req, res) => {
 router.get("/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
-
+    const { skip } = req.query;
     const user = await client.user.findUnique({
       where: {
         id: parseInt(userId),
@@ -60,6 +60,13 @@ router.get("/:userId", async (req, res) => {
       where: {
         userId: parseInt(userId),
       },
+      orderBy: {
+        createdAt: "desc",
+        //desc내림차순, asc오름차순
+      },
+      skip: parseInt(skip),
+      take: 3,
+      //이건 게시판 기능 한 페이지에 몇개만 보여줄지 parseint를 해야 한다고하심
     });
 
     res.json({ ok: true, todos });

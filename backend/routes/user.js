@@ -20,7 +20,7 @@ router.post("/", async (req, res) => {
         .status(400)
         .json({ ok: false, error: "Already exist account." });
     }
-
+    //이미 존재하는 유저 처리 안하면 즉 예외처리 안하면 백엔드 서버에서 무한 로딩이 발생한다, 어카운트가 유니크값으로 프리즈마에서 정의해서 중복으로 만들어지지는 않지만 무한로딩이 발생한다
     const user = await client.user.create({
       data: {
         account: account,
@@ -32,7 +32,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// // 유저조회
+// // 유저임시조회
 // router.get("/:id", async (req, res) => {
 //   try {
 //     const { id } = req.params;
@@ -45,11 +45,11 @@ router.post("/", async (req, res) => {
 //   }
 // });
 
-//특정 유저조회
+//유저조회
 router.get("/:account", async (req, res) => {
   try {
     const { account } = req.params;
-
+    //엑시오스에서는 바디로 겟요청이 안될거라고 하심 그래서 주소로 받는 파라미터 방법을 쓴다고하심
     const user = await client.user.findUnique({
       where: {
         account,
